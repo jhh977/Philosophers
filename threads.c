@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   threads.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhh <jhh@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: jhijazi <jhijazi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 15:18:08 by jhh               #+#    #+#             */
-/*   Updated: 2026/01/20 17:15:35 by jhh              ###   ########.fr       */
+/*   Updated: 2026/01/27 18:54:10 by jhijazi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,34 @@ static void	put_forks(t_philo *philo)
 {
 	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_unlock(philo->right_fork);
+	philo->meals_eaten++;
+}
+
+void usleep_pattern(t_philo *philo)
+{
+	if (philo->data->philo_count % 2 == 0)
+	{
+		if (philo->id % 2 == 0)
+			usleep(1000);
+	}
+	else
+	{
+		if (philo->id == philo->data->philo_count - 1)
+		{
+			// printf("abl ekher wehde: %d\n", philo->id);
+			usleep(philo->data->time_to_eat * 2000);
+		}
+		else 
+		{
+			if (philo->id % 2 == 0 || philo->id == philo->data->philo_count)
+			{
+				// printf("even, msh abl ekher wehde || ekher wehde: %d\n", philo->id);
+				usleep(philo->data->time_to_eat * 1000);
+			}
+			// else
+			// 	printf("odd && msh e5r wehde: %d\n", philo->id);
+		}
+	}
 }
 
 void	*philo_routine(void *arg)
@@ -78,8 +106,7 @@ void	*philo_routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	if (philo->id % 2 == 0)
-		usleep(1000);
+	usleep_pattern(philo);
 	while (1)
 	{
 		pthread_mutex_lock(&philo->data->death_mutex);
@@ -89,21 +116,18 @@ void	*philo_routine(void *arg)
 			break ;
 		}
 		pthread_mutex_unlock(&philo->data->death_mutex);
-
-		print_action(philo, "is thinking");
 		take_forks(philo);
-
 		pthread_mutex_lock(&philo->data->death_mutex);
 		philo->last_meal = get_time_ms();
 		pthread_mutex_unlock(&philo->data->death_mutex);
-
 		print_action(philo, "is eating");
 		precise_sleep(philo->data->time_to_eat, philo->data);
-
 		put_forks(philo);
-
 		print_action(philo, "is sleeping");
 		precise_sleep(philo->data->time_to_sleep, philo->data);
+		if (philo->data->philo_count % 2 != 0)
+			usleep(philo->data->time_to_eat * 1000);
+		print_action(philo, "is thinking");
 	}
 	return (NULL);
 }
@@ -113,13 +137,17 @@ void	*monitor_routine(void *arg)
 	t_data		*data;
 	int			i;
 	long long	now;
+	int			n;
 
 	data = (t_data *)arg;
 	while (1)
 	{
+		n = 1;
 		i = 0;
 		while (i < data->philo_count)
 		{
+			if (data->philos[i].meals_eaten < data->must_eat_count)
+				n = 0;
 			pthread_mutex_lock(&data->death_mutex);
 			now = get_time_ms();
 			if (!data->dead
@@ -136,6 +164,12 @@ void	*monitor_routine(void *arg)
 			}
 			pthread_mutex_unlock(&data->death_mutex);
 			i++;
+		}
+		if (n == 1)
+		{
+			printf("%lld number of meals reached\n",
+					timestamp(data));
+			return NULL;
 		}
 		usleep(1000);
 	}
