@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   threads.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhh <jhh@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: jhijazi <jhijazi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 15:18:08 by jhh               #+#    #+#             */
-/*   Updated: 2026/02/04 17:17:52 by jhh              ###   ########.fr       */
+/*   Updated: 2026/02/05 17:31:30 by jhijazi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-void usleep_pattern(t_philo *philo)
+void	usleep_pattern(t_philo *philo)
 {
 	if (philo->data->philo_count % 2 == 0)
 	{
@@ -25,7 +25,7 @@ void usleep_pattern(t_philo *philo)
 		{
 			usleep(philo->data->time_to_eat * 2000);
 		}
-		else 
+		else
 		{
 			if (philo->id % 2 == 0 || philo->id == philo->data->philo_count)
 				usleep(philo->data->time_to_eat * 1000);
@@ -47,19 +47,7 @@ void	*philo_routine(void *arg)
 			pthread_mutex_unlock(&philo->data->death_mutex);
 			break ;
 		}
-		pthread_mutex_unlock(&philo->data->death_mutex);
-		take_forks(philo);
-		pthread_mutex_lock(&philo->data->death_mutex);
-		philo->last_meal = get_time_ms();
-		pthread_mutex_unlock(&philo->data->death_mutex);
-		print_action(philo, "is eating");
-		precise_sleep(philo->data->time_to_eat, philo->data);
-		put_forks(philo);
-		print_action(philo, "is sleeping");
-		precise_sleep(philo->data->time_to_sleep, philo->data);
-		if (philo->data->philo_count % 2 != 0)
-			usleep(philo->data->time_to_eat * 1000);
-		print_action(philo, "is thinking");
+		routine_actions(philo);
 	}
 	return (NULL);
 }
@@ -68,33 +56,24 @@ void	*monitor_routine(void *arg)
 {
 	t_data		*data;
 	int			i;
-	long long	now;
 	int			n;
 
 	data = (t_data *)arg;
 	while (1)
 	{
-		n = 1;
-		i = 0;
+		init_vars(&n, &i);
 		while (i < data->philo_count)
 		{
 			if (data->philos[i].meals_eaten < data->must_eat_count)
 				n = 0;
-			pthread_mutex_lock(&data->death_mutex);
-			now = get_time_ms();
-			if(check_if_dead(data, i, now))
+			if (monitor_helper(data, i))
 				return (NULL);
-			pthread_mutex_unlock(&data->death_mutex);
 			i++;
 		}
 		if (n == 1 && data->must_eat_count >= 0)
 		{
-		    pthread_mutex_lock(&data->death_mutex);
-		    data->dead = 1;
-		    pthread_mutex_unlock(&data->death_mutex);
-			printf("%lld number of meals reached\n",
-					timestamp(data));
-			return NULL;
+			meals_reached(data);
+			return (NULL);
 		}
 		usleep(1000);
 	}

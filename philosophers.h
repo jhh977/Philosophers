@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhh <jhh@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: jhijazi <jhijazi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/14 14:43:16 by jhh               #+#    #+#             */
-/*   Updated: 2026/02/04 16:54:25 by jhh              ###   ########.fr       */
+/*   Updated: 2026/02/05 17:31:57 by jhijazi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,10 @@ void		print_action(t_philo *philo, char *msg);
 void		precise_sleep(long long ms, t_data *data);
 void		take_forks(t_philo *philo);
 void		put_forks(t_philo *philo);
-int	check_if_dead(t_data *data, int i, long long now);
+int			check_if_dead(t_data *data, int i, long long now);
+void		meals_reached(t_data *data);
+int			monitor_helper(t_data *data, int i);
+void		init_vars(int *n, int *i);
+void		routine_actions(t_philo *philo);
 
 #endif

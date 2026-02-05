@@ -1,8 +1,8 @@
-NAME = philosopher
+NAME = philo
 CC = cc
 CFLAGS = -Wall -Werror -Wextra
 SRC = main.c parser.c init.c ft_atoi.c threads.c time.c\
-		utils.c actions.c
+		utils.c actions.c monitor_utils.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)

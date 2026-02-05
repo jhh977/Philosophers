@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhh <jhh@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: jhijazi <jhijazi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 16:36:35 by jhh               #+#    #+#             */
-/*   Updated: 2026/02/04 16:54:06 by jhh              ###   ########.fr       */
+/*   Updated: 2026/02/05 17:32:06 by jhijazi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,16 @@ int	check_if_dead(t_data *data, int i, long long now)
 	return (0);
 }
 
+void	meals_reached(t_data *data)
+{
+	pthread_mutex_lock(&data->death_mutex);
+	data->dead = 1;
+	pthread_mutex_unlock(&data->death_mutex);
+	pthread_mutex_lock(&data->print_mutex);
+	printf("%lld number of meals reached\n", timestamp(data));
+	pthread_mutex_unlock(&data->print_mutex);
+}
+
 void	cleanup(t_data *data)
 {
 	int	i;
@@ -58,4 +68,21 @@ void	cleanup(t_data *data)
 		free(data->philos);
 		data->philos = NULL;
 	}
+}
+
+void	routine_actions(t_philo *philo)
+{
+	pthread_mutex_unlock(&philo->data->death_mutex);
+	take_forks(philo);
+	pthread_mutex_lock(&philo->data->death_mutex);
+	philo->last_meal = get_time_ms();
+	pthread_mutex_unlock(&philo->data->death_mutex);
+	print_action(philo, "is eating");
+	precise_sleep(philo->data->time_to_eat, philo->data);
+	put_forks(philo);
+	print_action(philo, "is sleeping");
+	precise_sleep(philo->data->time_to_sleep, philo->data);
+	if (philo->data->philo_count % 2 != 0)
+		usleep(philo->data->time_to_eat * 1000);
+	print_action(philo, "is thinking");
 }
