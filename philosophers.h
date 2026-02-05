@@ -6,7 +6,7 @@
 /*   By: jhh <jhh@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/14 14:43:16 by jhh               #+#    #+#             */
-/*   Updated: 2026/01/19 23:24:40 by jhh              ###   ########.fr       */
+/*   Updated: 2026/02/04 16:54:25 by jhh              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <sys/time.h>
 # include <stdlib.h>
 # include <unistd.h>
+
 typedef struct s_data
 {
 	int				philo_count;
@@ -44,14 +45,20 @@ typedef struct s_philo
 	t_data			*data;
 }	t_philo;
 
-int	is_number(char *str);
-int	parse_args(int argc, char **argv, t_data *data);
-void	init_philos(t_data *data);
-int	init_data(t_data *data);
-int	ft_atoi(const char *str);
-int	start_simulation(t_data *data);
-void	cleanup(t_data *data);
+int			is_number(char *str);
+int			parse_args(int argc, char **argv, t_data *data);
+void		init_philos(t_data *data);
+int			init_data(t_data *data);
+int			ft_atoi(const char *str);
+int			start_simulation(t_data *data);
+void		cleanup(t_data *data);
 long long	get_time_ms(void);
 long long	timestamp(t_data *data);
+void		dead_process(t_data *data, int i);
+void		print_action(t_philo *philo, char *msg);
+void		precise_sleep(long long ms, t_data *data);
+void		take_forks(t_philo *philo);
+void		put_forks(t_philo *philo);
+int	check_if_dead(t_data *data, int i, long long now);
 
 #endif

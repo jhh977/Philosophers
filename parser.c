@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   checker.c                                          :+:      :+:    :+:   */
+/*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhh <jhh@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:15:56 by jhh               #+#    #+#             */
-/*   Updated: 2026/01/19 14:15:59 by jhh              ###   ########.fr       */
+/*   Updated: 2026/01/30 17:23:31 by jhh              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ int	parse_args(int argc, char **argv, t_data *data)
 		|| !is_number(argv[3]) || !is_number(argv[4])
 		|| (argc == 6 && !is_number(argv[5])))
 		return (1);
-
 	data->philo_count = ft_atoi(argv[1]);
 	data->time_to_die = ft_atoi(argv[2]);
 	data->time_to_eat = ft_atoi(argv[3]);
@@ -44,7 +43,6 @@ int	parse_args(int argc, char **argv, t_data *data)
 	data->must_eat_count = -1;
 	if (argc == 6)
 		data->must_eat_count = ft_atoi(argv[5]);
-
 	if (data->philo_count <= 0 || data->time_to_die <= 0
 		|| data->time_to_eat <= 0 || data->time_to_sleep <= 0)
 		return (1);

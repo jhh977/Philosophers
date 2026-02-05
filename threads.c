@@ -3,76 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   threads.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhijazi <jhijazi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: jhh <jhh@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 15:18:08 by jhh               #+#    #+#             */
-/*   Updated: 2026/01/27 18:54:10 by jhijazi          ###   ########.fr       */
+/*   Updated: 2026/02/04 17:17:52 by jhh              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-void	print_action(t_philo *philo, char *msg)
-{
-	long long	time;
-
-	pthread_mutex_lock(&philo->data->death_mutex);
-	if (philo->data->dead)
-	{
-		pthread_mutex_unlock(&philo->data->death_mutex);
-		return ;
-	}
-	pthread_mutex_unlock(&philo->data->death_mutex);
-	pthread_mutex_lock(&philo->data->print_mutex);
-	time = timestamp(philo->data);
-	printf("%lld %d %s\n", time, philo->id, msg);
-	pthread_mutex_unlock(&philo->data->print_mutex);
-}
-
-void	precise_sleep(long long ms, t_data *data)
-{
-	long long	start;
-
-	start = get_time_ms();
-	while (1)
-	{
-		pthread_mutex_lock(&data->death_mutex);
-		if (data->dead)
-		{
-			pthread_mutex_unlock(&data->death_mutex);
-			return ;
-		}
-		pthread_mutex_unlock(&data->death_mutex);
-		if (get_time_ms() - start >= ms)
-			return ;
-		usleep(500);
-	}
-}
-
-static void	take_forks(t_philo *philo)
-{
-	if (philo->id % 2 == 0)
-	{
-		pthread_mutex_lock(philo->left_fork);
-		print_action(philo, "has taken a fork");
-		pthread_mutex_lock(philo->right_fork);
-		print_action(philo, "has taken a fork");
-	}
-	else
-	{
-		pthread_mutex_lock(philo->right_fork);
-		print_action(philo, "has taken a fork");
-		pthread_mutex_lock(philo->left_fork);
-		print_action(philo, "has taken a fork");
-	}
-}
-
-static void	put_forks(t_philo *philo)
-{
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
-	philo->meals_eaten++;
-}
 
 void usleep_pattern(t_philo *philo)
 {
@@ -85,18 +23,12 @@ void usleep_pattern(t_philo *philo)
 	{
 		if (philo->id == philo->data->philo_count - 1)
 		{
-			// printf("abl ekher wehde: %d\n", philo->id);
 			usleep(philo->data->time_to_eat * 2000);
 		}
 		else 
 		{
 			if (philo->id % 2 == 0 || philo->id == philo->data->philo_count)
-			{
-				// printf("even, msh abl ekher wehde || ekher wehde: %d\n", philo->id);
 				usleep(philo->data->time_to_eat * 1000);
-			}
-			// else
-			// 	printf("odd && msh e5r wehde: %d\n", philo->id);
 		}
 	}
 }
@@ -150,23 +82,16 @@ void	*monitor_routine(void *arg)
 				n = 0;
 			pthread_mutex_lock(&data->death_mutex);
 			now = get_time_ms();
-			if (!data->dead
-				&& now - data->philos[i].last_meal
-				> data->time_to_die)
-			{
-				data->dead = 1;
-				pthread_mutex_unlock(&data->death_mutex);
-				pthread_mutex_lock(&data->print_mutex);
-				printf("%lld %d died\n",
-					timestamp(data), data->philos[i].id);
-				pthread_mutex_unlock(&data->print_mutex);
+			if(check_if_dead(data, i, now))
 				return (NULL);
-			}
 			pthread_mutex_unlock(&data->death_mutex);
 			i++;
 		}
-		if (n == 1)
+		if (n == 1 && data->must_eat_count >= 0)
 		{
+		    pthread_mutex_lock(&data->death_mutex);
+		    data->dead = 1;
+		    pthread_mutex_unlock(&data->death_mutex);
 			printf("%lld number of meals reached\n",
 					timestamp(data));
 			return NULL;
@@ -189,47 +114,6 @@ int	single_philo(t_data *data)
 	pthread_mutex_unlock(&data->print_mutex);
 	return (0);
 }
-
-long long	get_time_ms(void)
-{
-	struct timeval	tv;
-
-	if (gettimeofday(&tv, NULL) != 0)
-		return (0);
-	return ((tv.tv_sec * 1000LL) + (tv.tv_usec / 1000));
-}
-
-long long	timestamp(t_data *data)
-{
-	return (get_time_ms() - data->start_time);
-}
-
-void	cleanup(t_data *data)
-{
-	int	i;
-
-	if (!data)
-		return ;
-	if (data->forks)
-	{
-		i = 0;
-		while (i < data->philo_count)
-		{
-			pthread_mutex_destroy(&data->forks[i]);
-			i++;
-		}
-		free(data->forks);
-		data->forks = NULL;
-	}
-	pthread_mutex_destroy(&data->print_mutex);
-	pthread_mutex_destroy(&data->death_mutex);
-	if (data->philos)
-	{
-		free(data->philos);
-		data->philos = NULL;
-	}
-}
-
 
 int	start_simulation(t_data *data)
 {
