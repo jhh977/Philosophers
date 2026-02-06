@@ -6,7 +6,7 @@
 /*   By: jhijazi <jhijazi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/14 14:43:16 by jhh               #+#    #+#             */
-/*   Updated: 2026/02/05 17:31:57 by jhijazi          ###   ########.fr       */
+/*   Updated: 2026/02/06 15:54:42 by jhijazi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ typedef struct s_data
 	long long		start_time;
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	death_mutex;
+	pthread_mutex_t	meals_mutex;
 	pthread_mutex_t	*forks;
 	struct s_philo	*philos;
 }	t_data;
@@ -64,5 +65,6 @@ void		meals_reached(t_data *data);
 int			monitor_helper(t_data *data, int i);
 void		init_vars(int *n, int *i);
 void		routine_actions(t_philo *philo);
+int			meals_checker(t_data *data, int n);
 
 #endif

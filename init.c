@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhh <jhh@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: jhijazi <jhijazi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 14:57:52 by jhh               #+#    #+#             */
-/*   Updated: 2026/02/04 15:01:11 by jhh              ###   ########.fr       */
+/*   Updated: 2026/02/06 14:51:49 by jhijazi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ int	init_data(t_data *data)
 	}
 	pthread_mutex_init(&data->print_mutex, NULL);
 	pthread_mutex_init(&data->death_mutex, NULL);
+	pthread_mutex_init(&data->meals_mutex, NULL);
 	data->philos = malloc(sizeof(t_philo) * data->philo_count);
 	if (!data->philos)
 		return (1);

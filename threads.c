@@ -6,7 +6,7 @@
 /*   By: jhijazi <jhijazi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 15:18:08 by jhh               #+#    #+#             */
-/*   Updated: 2026/02/05 17:31:30 by jhijazi          ###   ########.fr       */
+/*   Updated: 2026/02/06 15:53:50 by jhijazi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,18 +64,18 @@ void	*monitor_routine(void *arg)
 		init_vars(&n, &i);
 		while (i < data->philo_count)
 		{
+			pthread_mutex_lock(&data->meals_mutex);
 			if (data->philos[i].meals_eaten < data->must_eat_count)
+			{
 				n = 0;
+			}
+			pthread_mutex_unlock(&data->meals_mutex);
 			if (monitor_helper(data, i))
 				return (NULL);
 			i++;
 		}
-		if (n == 1 && data->must_eat_count >= 0)
-		{
-			meals_reached(data);
+		if (meals_checker(data, n))
 			return (NULL);
-		}
-		usleep(1000);
 	}
 	return (NULL);
 }
