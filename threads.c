@@ -6,7 +6,7 @@
 /*   By: jhijazi <jhijazi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/19 15:18:08 by jhh               #+#    #+#             */
-/*   Updated: 2026/02/06 15:53:50 by jhijazi          ###   ########.fr       */
+/*   Updated: 2026/02/06 16:24:42 by jhijazi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	usleep_pattern(t_philo *philo)
 	if (philo->data->philo_count % 2 == 0)
 	{
 		if (philo->id % 2 == 0)
-			usleep(1000);
+			usleep(500);
 	}
 	else
 	{

@@ -6,7 +6,7 @@
 /*   By: jhijazi <jhijazi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/06 15:50:19 by jhijazi           #+#    #+#             */
-/*   Updated: 2026/02/06 15:54:34 by jhijazi          ###   ########.fr       */
+/*   Updated: 2026/02/06 16:21:29 by jhijazi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,6 @@ int	meals_checker(t_data *data, int n)
 		meals_reached(data);
 		return (1);
 	}
-	usleep(1000);
+	usleep(900);
 	return (0);
 }
