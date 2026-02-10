@@ -27,9 +27,11 @@ make re     # Recompiles everything
 ## Resources
 
 Codevault videos for a great introduction to what is mutex, what is a race condition, and how to avoid it:
+
 What are Race conditions? https://www.youtube.com/watch?v=FY9livorrJI&list=PLfqABt5AS4FmuQf70psXrsMLEDQXNkLq2&index=3&pp=iAQB
 
 What is a mutex in C? https://www.youtube.com/watch?v=oq29KUy29iQ&list=PLfqABt5AS4FmuQf70psXrsMLEDQXNkLq2&index=4&pp=iAQB
+
 
 Dean Ruina's blog on Medium for a great explanation of the project:
 https://medium.com/@ruinadd/philosophers-42-guide-the-dining-philosophers-problem-893a24bc0fe2
